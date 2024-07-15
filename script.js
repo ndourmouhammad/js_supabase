@@ -99,6 +99,7 @@ save.addEventListener("click", async(e) => {
 
         document.getElementById("ideaForm").reset();
         flashMessage = document.getElementById('flashmessage');
+        getIdeas();
 
     } else {
         flashMessage.textContent = "Veuillez corriger les erreurs et réessayer";
@@ -112,3 +113,115 @@ save.addEventListener("click", async(e) => {
         }, 2000);
     }
 })
+
+
+// récuperer les données de la base de données
+const getIdeas = async () => {
+    try {
+        const { data, error } = await database.from('idees').select('*');
+
+        if (error) {
+            throw error
+        }
+        console.log("Idées récupérées avec succès:", data);
+        displayIdeas(data);
+
+    } catch (error) {
+         console.error("Erreur lors de la récupération des idées:", error.message);
+    }
+}
+
+
+// l'interface pour l'affichage des idées
+function displayIdeas(ideas) {
+    const ideasContainer = document.getElementById("ideasContainer");
+    ideasContainer.innerHTML = ""; // Clear previous content
+
+    ideas.forEach((idea, index) => {
+        // const truncatedMessage = idea.message.length > 255 ? `${idea.message.substr(0, 255)}...` : idea.message;
+
+        if (index % 3 === 0) {
+            const row = document.createElement("div");
+            row.className = "row";
+            ideasContainer.appendChild(row);
+        }
+
+        const row = ideasContainer.lastChild;
+
+        const ideaCard = document.createElement("div");
+        ideaCard.className = "col-md-4 col-sm-4 mb-5";
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        if (idea.statut === true) {
+            card.classList.add("approved");
+        } else if (idea.statut === false) {
+            card.classList.add("not-approved");
+        }
+
+        card.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${idea.libelle}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">${idea.categorie}</h6>
+                <p class="card-text">${idea.message}</p>
+                <div class="buttons">
+                    ${idea.statut === null ? `
+                        <button class="btn approve-btn" onclick="toggleApproval('${idea.id}', true)">
+                            <img src="images/approved.svg" alt="Approuver">
+                        </button>
+                        <button class="btn disapprove-btn" onclick="toggleApproval('${idea.id}', false)">
+                            <img src="images/not-approved.svg" alt="Désapprouver">
+                        </button>
+                    ` : ''}
+                    <button class="btn delete-btn" onclick="deleteIdea('${idea.id}')">
+                        <img src="images/trashs.svg" alt="Supprimer">
+                    </button>
+                </div>
+            </div>
+        `;
+
+        ideaCard.appendChild(card);
+        row.appendChild(ideaCard);
+    });
+}
+
+// L'approbation des idées
+async function toggleApproval(ideaId, approved) {
+    try {
+        const statut = approved;
+        const { data, error } = await database
+            .from('idees')
+            .update({ statut })
+            .eq('id', ideaId);
+
+        if (error) {
+            throw error;
+        }
+
+        console.log(`Idée ${ideaId} ${approved ? 'approuvée' : 'désapprouvée'} avec succès:`, data);
+        getIdeas(); // Refresh the list of ideas after modification
+    } catch (error) {
+        console.error(`Erreur lors de l'${approved ? 'approbation' : 'désapprobation'} de l'idée ${ideaId}:`, error.message);
+        alert(`Erreur lors de l'${approved ? 'approbation' : 'désapprobation'} de l'idée`);
+    }
+}
+
+// Supprimer une idée
+async function deleteIdea(ideaId) {
+    try {
+        const { data, error } = await database.from('idees').delete().eq('id', ideaId);
+
+        if (error) {
+            throw error;
+        }
+
+        console.log("Idée supprimée avec succès:", data);
+
+        getIdeas(); // Refresh the list of ideas after deletion
+    } catch (error) {
+        console.error("Erreur lors de la suppression de l'idée:", error.message);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", getIdeas); // Initial call to fetch ideas on page load
