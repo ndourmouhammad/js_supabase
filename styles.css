@@ -1,0 +1,83 @@
+body {
+    font-family: 'Roboto', sans-serif;
+   
+    color: #333;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 36px;
+  color: #7BC4D3;
+  }
+  
+  .card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  }
+  
+  .card-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  }
+  
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  
+  .boutons {
+    margin-top: auto; /* Pour pousser les boutons en bas */
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  
+  .btn-primary {
+  background-color: white;
+  border: 1px solid #7BC4D3;
+  border-radius: 25px;
+  color: #7BC4D3;
+  }
+  
+  
+  .btn-danger {
+  background-color: #e74c3c;
+  border: none;
+  }
+  
+  .error {
+  
+  color: red;
+  }
+  .not-approved {
+  border: solid 2px red;
+  }
+  .approved{
+  border: solid 2px green;
+  }
+  .warning {
+  color: red;
+  display: none;
+  }
+  .form-message {
+  text-align: center;
+  font-size: 24px;
+  }
+  .form-message.success {
+  color: green;
+  }
+  .form-message.error {
+  color: red;
+  }
